@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 
 function Products() {
-  const products = useSelector((state) => state.products.items);
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Unauthorized');
+        }
+
+        const response = await fetch('https://dummyjson.com/products', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+
+        const data = await response.json();
+        setProducts(data.products);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -20,7 +45,7 @@ function Products() {
       />
       <ul>
         {filteredProducts.map((product) => (
-          <li key={product.id}>{product.name}</li>
+          <li key={product.id}>{product.title}</li>
         ))}
       </ul>
     </div>

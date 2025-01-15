@@ -7,7 +7,7 @@ import Home from './components/Home';
 import Navbar from './components/Navbar';
 
 function App() {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const isAuthenticated = !!localStorage.getItem('token');
 
   return (
     <div>
